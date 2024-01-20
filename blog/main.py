@@ -33,22 +33,19 @@ def update(id, request: schemas.Blog, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Blog with id {id} not found"
         )
-    # blog.update(request)
-    for (
-        key,
-        value,
-    ) in (
-        request.dict().items()
-    ):  # TODO: Refactor this as dict() method is depricated, also Blog Updation is not working yet
-        setattr(blog, key, value)
-
+    blog.update(dict(request))
     db.commit()
-    return {"status": "Blog has been updated"}
+    return {"status": "Blog has been updated", "blog": request}
 
 
 @app.delete("/blog/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete(id, db: Session = Depends(get_db)):
-    db.query(models.Blog).filter(models.Blog.id == id).delete(synchronize_session=False)
+    blog = db.query(models.Blog).filter(models.Blog.id == id)
+    if not blog.first():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Blog with id {id} not found"
+        )
+    blog.delete(synchronize_session=False)
     db.commit()
 
     return {"status": "Blog has been deleted"}
