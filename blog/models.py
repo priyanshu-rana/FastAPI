@@ -8,3 +8,11 @@ class Blog(Base):
     title = Column(String)
     body = Column(String)
     is_published = Column(Boolean)
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    email = Column(String)
+    password = Column(String)

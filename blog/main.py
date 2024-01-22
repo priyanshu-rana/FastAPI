@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import Depends, FastAPI, HTTPException, status
 from .database import engine, SessionLocal
 from . import schemas, models
@@ -51,7 +52,11 @@ def delete(id, db: Session = Depends(get_db)):
     return {"status": "Blog has been deleted"}
 
 
-@app.get("/blogs", status_code=status.HTTP_200_OK)
+@app.get(
+    "/blogs",
+    status_code=status.HTTP_200_OK,
+    response_model=List[schemas.ShowBlogResponseModel],
+)
 def get_blogs(db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
     if not blogs:
@@ -61,7 +66,11 @@ def get_blogs(db: Session = Depends(get_db)):
     return blogs
 
 
-@app.get("/blog/{id}", status_code=status.HTTP_200_OK)
+@app.get(
+    "/blog/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.ShowBlogResponseModel,
+)
 def get_blog(id, db: Session = Depends(get_db)):
     # blog = db.query(models.Blog).get(id)                              #1
     # blog = db.query(models.Blog).where(models.Blog.id == id).first()  #2
@@ -72,3 +81,14 @@ def get_blog(id, db: Session = Depends(get_db)):
             detail=f"Blog with the id {id} is not available",
         )
     return blog
+
+
+@app.post("/user")
+def create_user(request: schemas.User, db: Session = Depends(get_db)):
+    new_user = models.User(
+        name=request.name, email=request.email, password=request.password
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
