@@ -22,3 +22,9 @@ class User(BaseModel):
     name: str
     email: str
     password: str
+
+
+class ShowUserResponseModel(BaseModel):
+    id: int
+    name: str
+    email: str
