@@ -1,21 +1,11 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class Blog(BaseModel):
     title: str
     body: str
     is_published: Optional[bool]
-
-
-class ShowBlogResponseModel(BaseModel):
-    id: int
-    title: str
-    body: str
-    is_published: Optional[bool]
-
-    class Config:
-        from_attributes = True
 
 
 class User(BaseModel):
@@ -28,3 +18,12 @@ class ShowUserResponseModel(BaseModel):
     id: int
     name: str
     email: str
+    blogs: List[Blog]
+
+
+class ShowBlogResponseModel(BaseModel):
+    id: int
+    title: str
+    body: str
+    is_published: Optional[bool]
+    creator: ShowUserResponseModel
