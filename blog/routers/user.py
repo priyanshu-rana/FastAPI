@@ -6,13 +6,13 @@ from .. import schemas, models
 from ..database import get_db
 from ..hashing import Hash
 
-router = APIRouter()
+router = APIRouter(prefix="/user", tags=["Users"])
 
 
 pwd_cxt = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-@router.post("/user", response_model=schemas.ShowUserResponseModel, tags=["Users"])
+@router.post("", response_model=schemas.ShowUserResponseModel)
 def create_user(request: schemas.User, db: Session = Depends(get_db)):
     new_user = models.User(
         name=request.name,
@@ -26,7 +26,8 @@ def create_user(request: schemas.User, db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/users", response_model=List[schemas.ShowUserResponseModel], tags=["Users"]
+    "/all",
+    response_model=List[schemas.ShowUserResponseModel],
 )
 def get_users(db: Session = Depends(get_db)):
     users = db.query(models.User).all()
@@ -37,7 +38,10 @@ def get_users(db: Session = Depends(get_db)):
     return users
 
 
-@router.get("/user/{id}", response_model=schemas.ShowUserResponseModel, tags=["Users"])
+@router.get(
+    "/{id}",
+    response_model=schemas.ShowUserResponseModel,
+)
 def get_user(id, db: Session = Depends(get_db)):
     user = db.query(models.User).get(id)
     if not user:

@@ -6,10 +6,10 @@ from .. import schemas, models
 from ..database import get_db
 
 
-router = APIRouter()
+router = APIRouter(prefix="/blog", tags=["Blogs"])
 
 
-@router.post("/blog", status_code=status.HTTP_201_CREATED, tags=["Blogs"])
+@router.post("", status_code=status.HTTP_201_CREATED)
 def create(request: schemas.Blog, db: Session = Depends(get_db)):
     new_blog = models.Blog(
         title=request.title,
@@ -23,7 +23,7 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
     return new_blog
 
 
-@router.put("/blog/{id}", status_code=status.HTTP_202_ACCEPTED, tags=["Blogs"])
+@router.put("/{id}", status_code=status.HTTP_202_ACCEPTED)
 def update(id, request: schemas.Blog, db: Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id)
     if not blog.first():
@@ -35,7 +35,7 @@ def update(id, request: schemas.Blog, db: Session = Depends(get_db)):
     return {"status": "Blog has been updated", "blog": request}
 
 
-@router.delete("/blog/{id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Blogs"])
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete(id, db: Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id)
     if not blog.first():
@@ -49,10 +49,9 @@ def delete(id, db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/blogs",
+    "/all",
     status_code=status.HTTP_200_OK,
     response_model=List[schemas.ShowBlogResponseModel],
-    tags=["Blogs"],
 )
 def get_blogs(db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
@@ -64,10 +63,9 @@ def get_blogs(db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/blog/{id}",
+    "/{id}",
     status_code=status.HTTP_200_OK,
     response_model=schemas.ShowBlogResponseModel,
-    tags=["Blogs"],
 )
 def get_blog(id, db: Session = Depends(get_db)):
     # blog = db.query(models.Blog).get(id)                              #1
