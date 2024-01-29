@@ -14,6 +14,11 @@ class User(BaseModel):
     password: str
 
 
+class Login(BaseModel):
+    username: str
+    password: str
+
+
 class ShowUserResponseModel(BaseModel):
     id: int
     name: str
