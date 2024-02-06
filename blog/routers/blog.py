@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from .. import schemas
 from ..database import get_db
 from ..services.blog_service import BlogService
-from blog.oauth2 import get_current_user
+from blog.oauth2 import get_current_user, get_current_user_id
 
 router = APIRouter(prefix="/blog", tags=["Blogs"])
 
@@ -14,9 +14,10 @@ router = APIRouter(prefix="/blog", tags=["Blogs"])
 def create(
     request: schemas.Blog,
     db: Session = Depends(get_db),
+    current_user_id=Depends(get_current_user_id),
     current_user: schemas.User = Depends(get_current_user),
 ):
-    return BlogService.create(request, db)
+    return BlogService.create(request, db, current_user_id)
 
 
 @router.put("/{id}", status_code=status.HTTP_202_ACCEPTED)

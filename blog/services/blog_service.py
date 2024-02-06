@@ -2,6 +2,7 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from blog import schemas
 from blog.database import get_db
+from blog.oauth2 import get_current_user_id
 from .. import models
 
 
@@ -14,12 +15,16 @@ class BlogService:
             )
         return blogs
 
-    def create(request: schemas.Blog, db: Session = Depends(get_db)):
+    def create(
+        request: schemas.Blog,
+        db: Session = Depends(get_db),
+        current_user_id=Depends(get_current_user_id),
+    ):
         new_blog = models.Blog(
             title=request.title,
             body=request.body,
             is_published=request.is_published,
-            user_id=1,  # TODO:Set user_id as per user which is creating blog, Currently we are harcoding user_id as 1
+            user_id=current_user_id,
         )
 
         db.add(new_blog)
